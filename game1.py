@@ -5,11 +5,17 @@ from pygame.locals import *
 
 # 参数
 SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
-MOVE_SPEED = 0.1
+MOVE_SPEED = 0.15
 BULLET_SPEED = 0.3
 SHOOT_TIME = 500
+SHOOT_TRACK = 1
+SHOOT_TRACK_GAP = 0.1
 MONSTER_SPEED = 0.05
-MONSTER_TIME = 2000
+MONSTER_HP = 0
+MONSTER_CREATE_TIME = 2000
+MONSTER_CREATE_NUMBER = 1
+MONSTER_STRONG_TIME = 10000
+BUFF_TIME = 3000
 
 # 初始化
 pg.init()
@@ -20,7 +26,10 @@ playerPosition = [SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2]
 bullets = []
 shootTimer = SHOOT_TIME
 monsters = []
-monsterTimer = MONSTER_TIME
+monsterCreateTimer = MONSTER_CREATE_TIME
+monsterStrongTimer = MONSTER_STRONG_TIME
+buffs = []
+buffTimer = BUFF_TIME
 score = 0
 gaming = True
 
@@ -29,8 +38,10 @@ playerImg = pg.image.load("./img/player.png")
 PLAYER_WIDTH = playerImg.get_rect().width
 bulletImg = pg.image.load("./img/bullet.png")
 BULLET_WIDTH = bulletImg.get_rect().width
-monsterImg = pg.image.load("./img/monster.png")
-MONSTER_WIDTH = monsterImg.get_rect().width
+monsterImgs= [pg.image.load("./img/monster0.png"), pg.image.load("./img/monster1.png"), pg.image.load("./img/monster2.png"), pg.image.load("./img/monster3.png"), pg.image.load("./img/monster4.png")]
+MONSTER_WIDTH = monsterImgs[0].get_rect().width
+buffImgs = [pg.image.load("./img/buff0.png"), pg.image.load("./img/buff1.png"), pg.image.load("./img/buff2.png"), pg.image.load("./img/buff3.png")]
+BUFF_WIDTH = buffImgs[0].get_rect().width
 
 while gaming:
     # 填充背景色覆盖上一帧画面
@@ -60,41 +71,71 @@ while gaming:
     elif keys[3]:
         playerPosition[0] += MOVE_SPEED
 
+    # 玩家Rect
+    playerRect = pg.Rect(playerImg.get_rect())
+    playerRect.top = playerPosition[1]
+    playerRect.left = playerPosition[0]
+
     # 发射子弹
     if shootTimer > 0:
         shootTimer -= 1
     else:
         shootTimer = SHOOT_TIME
-        bullets.append([playerAngle, playerPosition[0], playerPosition[1]])
+        shootAngle = playerAngle - (SHOOT_TRACK - 1) / 2 * SHOOT_TRACK_GAP
+        for i in range(SHOOT_TRACK):
+            bullets.append([shootAngle, playerPosition[0], playerPosition[1]])
+            shootAngle += SHOOT_TRACK_GAP
 
     # 生成怪物
-    if monsterTimer > 0:
-        monsterTimer -= 1
+    if monsterCreateTimer > 0:
+        monsterCreateTimer -= 1
     else:
-        monsterTimer = MONSTER_TIME
-        wall = random.randint(1, 4)
-        monsterPosition = ()
-        if wall == 1: # 上
-            monsterPosition = (random.randint(0, SCREEN_WIDTH), -MONSTER_WIDTH)
-        elif wall == 2: # 下
-            monsterPosition = (random.randint(0, SCREEN_WIDTH), SCREEN_HEIGHT + MONSTER_WIDTH)
-        elif wall == 3: # 左
-            monsterPosition = (-MONSTER_WIDTH, random.randint(0, SCREEN_HEIGHT))
-        elif wall == 4: # 右
-            monsterPosition = (SCREEN_WIDTH + MONSTER_WIDTH, random.randint(0, SCREEN_HEIGHT))
-        monsterAngle = math.atan2(playerPosition[1] - monsterPosition[1], playerPosition[0] - monsterPosition[0])
-        monsters.append([monsterAngle, monsterPosition[0], monsterPosition[1]])
+        monsterCreateTimer = MONSTER_CREATE_TIME
+        for i in range(MONSTER_CREATE_NUMBER):
+            wall = random.randint(1, 4)
+            monsterPosition = ()
+            if wall == 1: # 上
+                monsterPosition = (random.randint(0, SCREEN_WIDTH), -MONSTER_WIDTH)
+            elif wall == 2: # 下
+                monsterPosition = (random.randint(0, SCREEN_WIDTH), SCREEN_HEIGHT + MONSTER_WIDTH)
+            elif wall == 3: # 左
+                monsterPosition = (-MONSTER_WIDTH, random.randint(0, SCREEN_HEIGHT))
+            elif wall == 4: # 右
+                monsterPosition = (SCREEN_WIDTH + MONSTER_WIDTH, random.randint(0, SCREEN_HEIGHT))
+            monsterAngle = math.atan2(playerPosition[1] - monsterPosition[1], playerPosition[0] - monsterPosition[0])
+            monsters.append([MONSTER_HP, monsterAngle, monsterPosition[0], monsterPosition[1]])
+
+    # 生成buff
+    if buffTimer > 0:
+        buffTimer -= 1
+    else:
+        buffTimer = BUFF_TIME
+        buffs.append([random.randint(0, 3), random.randint(0, SCREEN_WIDTH), random.randint(0, SCREEN_HEIGHT)])
+
+    # 绘制buff
+    for buff in buffs:
+        screen.blit(buffImgs[buff[0]], (buff[1], buff[2]))
+
+    # 加强怪物
+    if monsterStrongTimer > 0:
+        monsterStrongTimer -= 1
+    else:
+        monsterStrongTimer = MONSTER_STRONG_TIME
+        MONSTER_SPEED += 0.05
+        MONSTER_HP = min(MONSTER_HP + 1, 4)
+        MONSTER_CREATE_TIME = max(MONSTER_CREATE_TIME - 250, 125)
+        MONSTER_CREATE_NUMBER += 1
 
     # 移动怪物
     index = 0
     for monster in monsters:
-        monster[1] += math.cos(monster[0]) * MONSTER_SPEED
-        monster[2] += math.sin(monster[0]) * MONSTER_SPEED
-        if monster[1] < -MONSTER_WIDTH or monster[1] > SCREEN_WIDTH + MONSTER_WIDTH or monster[2] < -MONSTER_WIDTH or monster[2] > SCREEN_HEIGHT + MONSTER_WIDTH:
+        monster[2] += math.cos(monster[1]) * MONSTER_SPEED
+        monster[3] += math.sin(monster[1]) * MONSTER_SPEED
+        if monster[2] < -MONSTER_WIDTH or monster[2] > SCREEN_WIDTH + MONSTER_WIDTH or monster[3] < -MONSTER_WIDTH or monster[3] > SCREEN_HEIGHT + MONSTER_WIDTH:
             monsters.pop(index)
         else:
             index += 1
-        screen.blit(monsterImg, (monster[1], monster[2]))
+        screen.blit(monsterImgs[monster[0]], (monster[2], monster[3]))
 
     # 移动子弹
     index = 0
@@ -107,15 +148,8 @@ while gaming:
             index += 1
         screen.blit(bulletImg, (bullet[1], bullet[2]))
 
-    # 处理鼠标键盘事件
+    # 处理键盘事件
     for event in pg.event.get():
-        # 退出事件
-        if event.type == pg.K_ESCAPE:
-            pg.quit()
-            exit()
-        # 鼠标左键发射
-        # if event.type == pg.MOUSEBUTTONDOWN:
-        #     bullets.append([playerAngle, playerPosition[0], playerPosition[1]])
         # 键盘按下事件
         if event.type == pg.KEYDOWN:
             if event.key == K_w:
@@ -126,6 +160,9 @@ while gaming:
                 keys[2] = True
             elif event.key == K_d:
                 keys[3] = True
+            elif event.key == K_ESCAPE:
+                pg.quit()
+                exit()
         # 键盘放开事件
         if event.type == pg.KEYUP:
             if event.key == K_w:
@@ -137,12 +174,15 @@ while gaming:
             elif event.key == K_d:
                 keys[3] = False
 
-    # 处理碰撞事件
+    # 处理怪物碰撞事件
     index_monster = 0
     for monster in monsters:
-        monsterRect = pg.Rect(monsterImg.get_rect())
-        monsterRect.top = monster[2]
-        monsterRect.left = monster[1]
+        monsterRect = pg.Rect(monsterImgs[monster[0]].get_rect())
+        monsterRect.top = monster[3]
+        monsterRect.left = monster[2]
+        # 与玩家的碰撞
+        if monsterRect.colliderect(playerRect):
+            gaming = False
         # 与子弹的碰撞
         index_bullet = 0
         for bullet in bullets:
@@ -151,27 +191,42 @@ while gaming:
             bulletRect.left = bullet[1]
             if monsterRect.colliderect(bulletRect):
                 score += 1
-                monsters.pop(index_monster)
                 bullets.pop(index_bullet)
-                index_monster -= 1
-                break
-            index_bullet += 1
-
-        # 与玩家的碰撞
-        playerRect = pg.Rect(playerImg.get_rect())
-        playerRect.top = playerPosition[1]
-        playerRect.left = playerPosition[0]
-        if monsterRect.colliderect(playerRect):
-            gaming = False
+                monster[0] -= 1
+                if monster[0] < 0:
+                    monsters.pop(index_monster)
+                    index_monster -= 1
+                    break
+            else:
+                index_bullet += 1
         index_monster += 1
+
+    # 处理buff与玩家的碰撞
+    index = 0
+    for buff in buffs:
+        buffRect = pg.Rect(buffImgs[buff[0]].get_rect())
+        buffRect.top = buff[2]
+        buffRect.left = buff[1]
+        if buffRect.colliderect(playerRect):
+            buffs.pop(index)
+            if buff[0] == 0: # 0.15
+                MOVE_SPEED += 0.05
+            elif buff[0] == 1: # 500
+                SHOOT_TIME = max(SHOOT_TIME - 100, 100)
+            elif buff[0] == 2: # 0.3
+                BULLET_SPEED += 0.15
+            elif buff[0] == 3: # 1
+                SHOOT_TRACK += 1
+        else:
+            index += 1
 
     # 绘制
     pg.display.flip()
 
 # 失败
-screen.fill((188, 188, 188))
-loseFont = pg.font.Font(None, 36)
-loseText = loseFont.render("you lose", 1, (0, 0, 0))
+screen.fill((0, 0, 0))
+loseFont = pg.font.Font(None, 60)
+loseText = loseFont.render("you lose", 1, (255, 0, 0))
 loseRect = loseText.get_rect()
 loseRect.centerx = screen.get_rect().centerx
 loseRect.centery = screen.get_rect().centery
@@ -180,6 +235,6 @@ pg.display.flip()
 
 while True:
     for event in pg.event.get():
-        if event.type == pg.K_ESCAPE:
+        if event.type == pg.KEYDOWN and event.key == K_ESCAPE:
             pg.quit()
             exit()
