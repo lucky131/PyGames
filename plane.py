@@ -66,8 +66,8 @@ while gaming:
 
     # 玩家Rect
     playerRect = pg.Rect(playerImg.get_rect())
-    playerRect.top = playerPosition[1]
-    playerRect.left = playerPosition[0]
+    playerRect.top = playerPosition[1] - playerImg.get_rect().width / 2
+    playerRect.left = playerPosition[0] - playerImg.get_rect().width / 2
 
     # 发射子弹
     if shootTimer > 0:
