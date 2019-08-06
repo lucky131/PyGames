@@ -5,7 +5,7 @@ from pygame.locals import *
 
 # 参数
 SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
-MOVE_SPEED = 0.15
+MOVE_SPEED = 0.2
 BULLET_SPEED = 0.3
 SHOOT_TIME = 500
 SHOOT_TRACK = 1
@@ -45,14 +45,7 @@ BUFF_WIDTH = buffImgs[0].get_rect().width
 
 while gaming:
     # 填充背景色覆盖上一帧画面
-    screen.fill((188, 188, 188))
-
-    # HUD
-    scoreFont = pg.font.SysFont('arial', 36)
-    scoreText = scoreFont.render(str(score), 1, (0, 0, 0))
-    scoreRect = scoreText.get_rect()
-    scoreRect.topleft = [10, 10]
-    screen.blit(scoreText, scoreRect)
+    screen.fill((131, 131, 131))
 
     # 旋转玩家
     mousePosition = pg.mouse.get_pos()
@@ -110,7 +103,7 @@ while gaming:
         buffTimer -= 1
     else:
         buffTimer = BUFF_TIME
-        buffs.append([random.randint(0, 3), random.randint(0, SCREEN_WIDTH), random.randint(0, SCREEN_HEIGHT)])
+        buffs.append([random.randint(0, 3), random.randint(SCREEN_WIDTH / 8, SCREEN_WIDTH / 8 * 7), random.randint(SCREEN_HEIGHT / 8, SCREEN_HEIGHT / 8 * 7)])
 
     # 绘制buff
     for buff in buffs:
@@ -147,6 +140,31 @@ while gaming:
         else:
             index += 1
         screen.blit(bulletImg, (bullet[1], bullet[2]))
+
+    # HUD
+    scoreFont = pg.font.SysFont('arial', 24)
+    scoreText = scoreFont.render("score: " + str(score), 1, (0, 0, 0))
+    scoreRect = scoreText.get_rect()
+    scoreRect.topleft = [10, 10]
+    screen.blit(scoreText, scoreRect)
+
+    buffFont = pg.font.SysFont('arial', 18)
+    buff0Text = buffFont.render("speed: " + str(round(MOVE_SPEED, 1)), 1, (231, 33, 40))
+    buff0Rect = buff0Text.get_rect()
+    buff0Rect.topright = [SCREEN_WIDTH - 10, 10]
+    buff1Text = buffFont.render("shoot gap: " + str(SHOOT_TIME), 1, (231, 231, 33))
+    buff1Rect = buff1Text.get_rect()
+    buff1Rect.topright = [SCREEN_WIDTH - 10, 30]
+    buff2Text = buffFont.render("shoot speed: " + str(round(BULLET_SPEED, 1)), 1, (80, 231, 33))
+    buff2Rect = buff2Text.get_rect()
+    buff2Rect.topright = [SCREEN_WIDTH - 10, 50]
+    buff3Text = buffFont.render("bullet: " + str(SHOOT_TRACK), 1, (33, 116, 231))
+    buff3Rect = buff3Text.get_rect()
+    buff3Rect.topright = [SCREEN_WIDTH - 10, 70]
+    screen.blit(buff0Text, buff0Rect)
+    screen.blit(buff1Text, buff1Rect)
+    screen.blit(buff2Text, buff2Rect)
+    screen.blit(buff3Text, buff3Rect)
 
     # 处理键盘事件
     for event in pg.event.get():
@@ -209,14 +227,14 @@ while gaming:
         buffRect.left = buff[1]
         if buffRect.colliderect(playerRect):
             buffs.pop(index)
-            if buff[0] == 0: # 0.15
-                MOVE_SPEED += 0.05
+            if buff[0] == 0: # 0.2
+                MOVE_SPEED += 0.1
             elif buff[0] == 1: # 500
-                SHOOT_TIME = max(SHOOT_TIME - 100, 100)
+                SHOOT_TIME = max(SHOOT_TIME - 100, 50)
             elif buff[0] == 2: # 0.3
-                BULLET_SPEED += 0.15
+                BULLET_SPEED += 0.2
             elif buff[0] == 3: # 1
-                SHOOT_TRACK += 1
+                SHOOT_TRACK += 2
         else:
             index += 1
 
