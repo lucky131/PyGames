@@ -48,7 +48,7 @@ while gaming:
     screen.fill((188, 188, 188))
 
     # HUD
-    scoreFont = pg.font.Font(None, 36)
+    scoreFont = pg.font.SysFont('arial', 36)
     scoreText = scoreFont.render(str(score), 1, (0, 0, 0))
     scoreRect = scoreText.get_rect()
     scoreRect.topleft = [10, 10]
@@ -225,7 +225,7 @@ while gaming:
 
 # 失败
 screen.fill((0, 0, 0))
-loseFont = pg.font.Font(None, 60)
+loseFont = pg.font.SysFont('arial', 60)
 loseText = loseFont.render("you lose  score: " + str(score), 1, (255, 0, 0))
 loseRect = loseText.get_rect()
 loseRect.centerx = screen.get_rect().centerx
