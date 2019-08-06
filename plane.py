@@ -160,7 +160,7 @@ while gaming:
                 keys[2] = True
             elif event.key == K_d:
                 keys[3] = True
-            elif event.key == K_ESCAPE:
+            elif event.key == K_ESCAPE or event.key == K_q:
                 pg.quit()
                 exit()
         # 键盘放开事件
@@ -226,7 +226,7 @@ while gaming:
 # 失败
 screen.fill((0, 0, 0))
 loseFont = pg.font.Font(None, 60)
-loseText = loseFont.render("you lose", 1, (255, 0, 0))
+loseText = loseFont.render("you lose  score: " + str(score), 1, (255, 0, 0))
 loseRect = loseText.get_rect()
 loseRect.centerx = screen.get_rect().centerx
 loseRect.centery = screen.get_rect().centery
@@ -235,6 +235,6 @@ pg.display.flip()
 
 while True:
     for event in pg.event.get():
-        if event.type == pg.KEYDOWN and event.key == K_ESCAPE:
+        if event.type == pg.KEYDOWN and (event.key == K_ESCAPE or event.key == K_q):
             pg.quit()
             exit()
