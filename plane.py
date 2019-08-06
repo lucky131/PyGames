@@ -103,7 +103,7 @@ while gaming:
         buffTimer -= 1
     else:
         buffTimer = BUFF_TIME
-        buffs.append([random.randint(0, 3), random.randint(SCREEN_WIDTH / 8, SCREEN_WIDTH / 8 * 7), random.randint(SCREEN_HEIGHT / 8, SCREEN_HEIGHT / 8 * 7)])
+        buffs.append([random.randint(0, 3), random.randint(int(SCREEN_WIDTH / 6), int(SCREEN_WIDTH / 6 * 5)), random.randint(int(SCREEN_HEIGHT / 6), int(SCREEN_HEIGHT / 6 * 5))])
 
     # 绘制buff
     for buff in buffs:
