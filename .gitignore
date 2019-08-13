@@ -2,6 +2,7 @@
 /build/
 /dist/
 /venv/
+/output/
 /__pycache__/
 npm-debug.log*
 yarn-debug.log*
