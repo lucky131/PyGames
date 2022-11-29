@@ -3,6 +3,8 @@ import random
 import pygame as pg
 from pygame.locals import *
 
+#test git
+
 # 参数
 SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
 MOVE_SPEED = 0.2
