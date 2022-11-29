@@ -145,22 +145,22 @@ while gaming:
 
     # HUD
     scoreFont = pg.font.SysFont('arial', 24)
-    scoreText = scoreFont.render("score: " + str(score), 1, (0, 0, 0))
+    scoreText = scoreFont.render("score: " + str(score), True, (0, 0, 0))
     scoreRect = scoreText.get_rect()
     scoreRect.topleft = [10, 10]
     screen.blit(scoreText, scoreRect)
 
     buffFont = pg.font.SysFont('arial', 18)
-    buff0Text = buffFont.render("speed: " + str(round(MOVE_SPEED, 1)), 1, (231, 33, 40))
+    buff0Text = buffFont.render("speed: " + str(round(MOVE_SPEED, 1)), True, (231, 33, 40))
     buff0Rect = buff0Text.get_rect()
     buff0Rect.topright = [SCREEN_WIDTH - 10, 10]
-    buff1Text = buffFont.render("shoot gap: " + str(SHOOT_TIME), 1, (231, 231, 33))
+    buff1Text = buffFont.render("shoot gap: " + str(SHOOT_TIME), True, (231, 231, 33))
     buff1Rect = buff1Text.get_rect()
     buff1Rect.topright = [SCREEN_WIDTH - 10, 30]
-    buff2Text = buffFont.render("shoot speed: " + str(round(BULLET_SPEED, 1)), 1, (80, 231, 33))
+    buff2Text = buffFont.render("shoot speed: " + str(round(BULLET_SPEED, 1)), True, (80, 231, 33))
     buff2Rect = buff2Text.get_rect()
     buff2Rect.topright = [SCREEN_WIDTH - 10, 50]
-    buff3Text = buffFont.render("bullet: " + str(SHOOT_TRACK), 1, (33, 116, 231))
+    buff3Text = buffFont.render("bullet: " + str(SHOOT_TRACK), True, (33, 116, 231))
     buff3Rect = buff3Text.get_rect()
     buff3Rect.topright = [SCREEN_WIDTH - 10, 70]
     screen.blit(buff0Text, buff0Rect)
@@ -246,7 +246,7 @@ while gaming:
 # 失败
 screen.fill((0, 0, 0))
 loseFont = pg.font.SysFont('arial', 60)
-loseText = loseFont.render("you lose  score: " + str(score), 1, (255, 0, 0))
+loseText = loseFont.render("you lose  score: " + str(score), True, (255, 0, 0))
 loseRect = loseText.get_rect()
 loseRect.centerx = screen.get_rect().centerx
 loseRect.centery = screen.get_rect().centery
